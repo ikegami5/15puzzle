@@ -1,1 +1,1 @@
-using PyQt4
+using PyQt4(GPL)
