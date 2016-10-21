@@ -11,12 +11,13 @@ class Widget(QtGui.QMainWindow):
 		self.initUI()
 		
 	def initUI(self):
-		self.icon15 = QtGui.QIcon("puzzle15/img/15.png")
-		self.iconShuffle = QtGui.QIcon("puzzle15/img/shuffle.png")
+		self.icon15 = QtGui.QIcon("img/15.png")
+		self.iconShuffle = QtGui.QIcon("img/shuffle.png")
 		shuffleAction = QtGui.QAction(self.iconShuffle, "Shuffle", self)
 		shuffleAction.triggered.connect(self.shufflePanels)
 
 		self.clearMessage = QtGui.QMessageBox(QtGui.QMessageBox.Information, "clear", "Clear!", QtGui.QMessageBox.Ok)
+		self.playing = False
 		
 		self.toolbar = self.addToolBar("Shuffle")
 		self.toolbar.addAction(shuffleAction)
@@ -39,7 +40,7 @@ class Widget(QtGui.QMainWindow):
 			self.panels.append(Panel(self))
 			self.panels[number - 1].number = number
 			self.setPanel(number, self.positions[number - 1])
-			self.panels[number - 1].setPixmap(QtGui.QPixmap("puzzle15/img/" + str(number) + ".png"))
+			self.panels[number - 1].setPixmap(QtGui.QPixmap("img/" + str(number) + ".png"))
 
 	def setPanel(self, number, position):
 		self.panels[number - 1].setGeometry(position.x(), position.y(), 100, 100)
@@ -65,6 +66,7 @@ class Widget(QtGui.QMainWindow):
 				self.clearMessage.show()
 				self.clearMessage.raise_()
 				self.clearMessage.activateWindow()
+				self.playing = False
 
 	def isOriginalState(self):
 		for number in map(lambda x:x+1, range(15)):
@@ -92,11 +94,13 @@ class Widget(QtGui.QMainWindow):
 				if swapCount % 2 == 0:
 					break
 		self.blankPoint = self.positions[15]
+		self.playing = True
 
 
 class Panel(QtGui.QLabel):
 	def mouseReleaseEvent(self, event):
-		self.parentWidget().slide(self.number)
+		if self.parentWidget().playing:
+			self.parentWidget().slide(self.number)
 
 
 def main():
